@@ -247,8 +247,8 @@ header .title {
   }
 }
 
-/* 響應式設計: 大於 1200px */
-@media (min-width: 1201px) {
+/* 響應式設計:  1201px ~1920px */
+@media (min-width: 1201px) and (max-width: 1920px){
   main.content {
     width: 1200px;
   }
