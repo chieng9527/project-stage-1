@@ -1,0 +1,294 @@
+/* 全局樣式 */
+body {
+  margin: 0;
+  font-family: "Amethysta", sans-serif;
+  font-size: 20px;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  background-color: #ffffff;
+  color: rgb(30, 30, 30);
+  height: 50px;
+}
+
+header .title {
+  font-size: 1.5rem;
+}
+
+.menu a {
+  color: rgb(30, 30, 30);
+  margin-left: 15px;
+  text-decoration: none;
+}
+
+.close-btn {
+  display: none;
+}
+
+
+.hamburger-icon img {
+  display: none;
+  width: 30px;
+  cursor: pointer;
+  z-index: 1;
+}
+
+/* 漢堡選單開啟時的樣式 */
+.menu.open {
+  right: 0;
+}
+
+.menu ul {
+  list-style: none;
+  padding: 20px;
+  margin: 0;
+}
+
+.menu li {
+  margin: 15px 0;
+  font-size: 1.2rem;
+  color: #333;
+  text-align: center;
+}
+
+
+
+/* 歡迎區域樣式 */
+.welcome {
+  background-color: rgb(214, 233, 248);
+  height: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.welcome h1 {
+  font-size: 40px;
+  text-align: center;
+}
+
+/* 主內容容器 */
+.content {
+  margin: 20px auto;
+  width: 90%;
+}
+
+/* 小盒子區域 */
+.small-boxes {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+}
+
+.small-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.small-box img {
+  width: 80px;
+  height: 50px;
+  object-fit: cover;
+  margin: -10px;
+}
+
+.small-box p {
+  padding-left: 10px;
+}
+
+/* 大盒子區域 */
+.big-boxes {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.big-box {
+  position: relative;
+  background-image: url("https://images.pexels.com/photos/457882/pexels-photo-457882.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1");
+  background-size: cover;
+  height: 200px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+
+.big-box .text-block {
+  background: rgba(212, 221, 200, 0.8);
+  color: rgb(0, 0, 0);
+  padding: 10px;
+  text-align: center;
+  width: 100%;
+}
+
+.big-box .star-icon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 30px;
+  height: 30px;
+  opacity: 0.8;
+}
+
+/* 響應式設計: 360px ~ 600px */
+@media (min-width: 360px) and (max-width: 600px) {
+  main.content {
+    width: 90%;
+  }
+
+  /* 漢堡選單樣式 */
+  .menu {
+    display: none;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    right: 0;
+    background-color: #f8f9fa;
+    width: 40%;
+    height: 100vh;
+    box-shadow: -5px 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 5;
+    padding: 20px;
+    transition: right 0.3s ease-in-out;
+
+  }
+
+  .menu.open {
+    display: flex;
+  }
+
+  .menu a {
+    margin: 15px 0;
+    font-size: 1.2rem;
+    text-align: center;
+  }
+
+  .close-btn {
+    display: none;
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 1.8rem;
+    color: #282828;
+    cursor: pointer;
+  }
+
+  .menu.open .close-btn {
+    display: block;
+  }
+
+
+
+  .small-box {
+    height: 50px;
+    background-color: rgb(199, 224, 242);
+    margin-bottom: 20px;
+  }
+
+  .big-box {
+    margin-bottom: 20px;
+  }
+
+  .hamburger-icon img {
+    display: block;
+  }
+
+  .hamburger-icon.hide {
+    display: none;
+  }
+}
+
+
+
+/* 響應式設計: 601px ~ 1200px */
+@media (min-width: 601px) and (max-width: 1200px) {
+  main.content {
+    width: 90%;
+    /* 內容寬度為螢幕的 90% */
+  }
+
+  .small-boxes {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .small-boxes .small-box:nth-child(3) {
+    grid-column: span 2;
+  }
+
+  .small-box {
+    height: 50px;
+    background-color: rgb(199, 224, 242);
+    margin-bottom: 20px;
+  }
+
+  .small-box:first-child {
+    margin-right: 10px;
+  }
+
+  .small-box:nth-child(2) {
+    margin-left: 10px;
+  }
+
+  .big-boxes {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  .big-boxes .big-box:nth-last-child(-n+2) {
+    grid-column: span 2;
+  }
+}
+
+/* 響應式設計: 大於 1200px */
+@media (min-width: 1201px) {
+  main.content {
+    width: 1200px;
+  }
+
+  .small-boxes {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 50px;
+    margin: 20px auto;
+    max-width: 1200px;
+  }
+
+  .small-box {
+    flex: 1;
+    height: 100%;
+    margin: 0 10px;
+    display: flex;
+    align-items: center;
+    background-color: rgb(199, 224, 242);
+  }
+
+  .small-box:first-child {
+    margin-left: 0;
+  }
+
+  .small-box:last-child {
+    margin-right: 0;
+  }
+
+  .big-boxes {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 20px;
+    width: 1200px;
+    margin: 0 auto;
+  }
+
+  .big-box:nth-child(1),
+  .big-box:nth-child(6) {
+    grid-column: span 2;
+  }
+}
