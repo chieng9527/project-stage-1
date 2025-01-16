@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>assignment-2</title>
+</head>
+
+<body>
+
+  <script>
+
+    console.log('=== Task 1 ===');
+    function findAndPrint(messages, currentStation) {
+      // 1. 定義捷運路線分段
+      const greenLineSections = [
+        ["Xindian", "Xindian City Hall", "Qizhang"],
+        ["Qizhang", "Xiaobitan"], // 分支
+        ["Qizhang", "Dapinglin", "Jingmei", "Wanlong", "Gongguan", "Taipower Building", "Guting"],
+        ["Guting", "Chiang Kai-Shek Memorial Hall", "Ximen", "Beimen", "Zhongshan"],
+        ["Zhongshan", "Songjiang Nanjing", "Nanjing Fuxing", "Taipei Arena", "Nanjing Sanmin", "Songshan"]
+      ];
+
+      // 2. 構建捷運鄰接表
+      function buildGraph(sections) {
+        const graph = {};
+        for (const section of sections) {
+          for (let i = 0; i < section.length; i++) {
+            const station = section[i];
+            if (!graph[station]) graph[station] = []; // 初始化站點的鄰居
+            if (i > 0) graph[station].push(section[i - 1]); // 加入前一站
+            if (i < section.length - 1) graph[station].push(section[i + 1]); // 加入後一站
+          }
+        }
+        return graph;
+      }
+      const greenLineGraph = buildGraph(greenLineSections);
+
+
+      // 3. 找出每位朋友的捷運站
+      function getFriendStations(messages) {
+        const stations = Object.keys(greenLineGraph); // 所有捷運站
+        const result = {};
+        for (const [name, message] of Object.entries(messages)) {
+          // 找出朋友提到的捷運站
+          const station = stations.find(st => message.includes(st));
+          if (station) result[name] = station;
+        }
+        return result;
+      }
+      const friendStations = getFriendStations(messages);
+
+      // 4. 計算兩站最短距離
+      function calculateShortestDistance(graph, start, end) {
+        if (start === end) return 0;
+        const queue = [[start, 0]]; // [當前站點, 距離]
+        const visited = new Set(); // 記錄已訪問的站點
+
+        while (queue.length > 0) {
+          const [current, distance] = queue.shift(); // 取出隊列中的第一個
+          if (current === end) return distance; // 找到目標站點
+          visited.add(current); // 標記為已訪問
+          for (const neighbor of graph[current]) {
+            if (!visited.has(neighbor)) {
+              queue.push([neighbor, distance + 1]); // 將鄰站加入隊列
+            }
+          }
+        }
+        return Infinity; // 無法到達目標站點
+      }
+
+      // 5. 找出距離最近的朋友
+      let nearestFriend = null;
+      let minDistance = Infinity;
+
+      for (const [name, station] of Object.entries(friendStations)) {
+        const distance = calculateShortestDistance(greenLineGraph, currentStation, station);
+        if (distance < minDistance) {
+          minDistance = distance;
+          nearestFriend = name;
+        }
+      }
+
+      console.log(nearestFriend); // 輸出最近的朋友名稱
+    }
+    const messages = {
+      "Bob": "I'm at Ximen MRT station.",
+      "Mary": "I have a drink near Jingmei MRT station.",
+      "Copper": "I just saw a concert at Taipei Arena.",
+      "Leslie": "I'm at home near Xiaobitan station.",
+      "Vivian": "I'm at Xindian station waiting for you."
+    };
+    findAndPrint(messages, "Wanlong"); // print Mary
+    findAndPrint(messages, "Songshan"); // print Copper
+    findAndPrint(messages, "Qizhang"); // print Leslie
+    findAndPrint(messages, "Ximen"); // print Bob
+    findAndPrint(messages, "Xindian City Hall"); // print Vivian
+
+    console.log('=== Task 2 ===');
+    // 1.將三個人的時間切成24等份，以 0 為初始值
+    const schedule = {
+      John: Array(24).fill(0),
+      Bob: Array(24).fill(0),
+      Jenny: Array(24).fill(0)
+    };
+
+    function book(consultants, hour, duration, criteria) {
+      const start = hour;
+      const end = hour + duration;
+      // 2. 更新時間表，把指定時間段從 0 改為 1
+      function occupyTime(designer, start, end) {
+        for (let i = start; i < end; i++) {
+          schedule[designer][i] = 1;
+        }
+      }
+      // 3. 確認時間段是否空閒
+      function isAvailable(designer, start, end) {
+        for (let i = start; i < end; i++) {
+          if (schedule[designer][i] === 1) return false; // 有衝突
+        }
+        return true; // 無衝突
+      }
+
+
+      // 4.檢查時間段是否有超過 2 位顧問已被占用
+      let overlapping = 0;
+      consultants.forEach(c => {
+        for (let i = start; i < end; i++) {
+          if (schedule[c.name][i] === 1) {
+            overlapping++;
+            break;
+          }
+        }
+      });
+      if (overlapping === Object.entries(schedule).length) {
+        console.log("No Service");
+        return;
+      }
+      // 5. 找出所有時間空閒的顧問
+      const availableConsultants = consultants.filter(c =>
+        isAvailable(c.name, hour, hour + duration)
+      );
+      // 6. 比較顧問，根據需求選擇
+      let selected;
+      if (criteria === "price") {
+        selected = availableConsultants.reduce((a, b) => a.price < b.price ? a : b);
+      } else if (criteria === "rate") {
+        selected = availableConsultants.reduce((a, b) => a.rate > b.rate ? a : b);
+      }
+
+      // 7. 預約成功，更新時間表
+      occupyTime(selected.name, start, end);
+      console.log(selected.name);
+    }
+
+    const consultants = [
+      { name: "John", rate: 4.5, price: 1000 },
+      { name: "Bob", rate: 3, price: 1200 },
+      { name: "Jenny", rate: 3.8, price: 800 }
+    ];
+
+    book(consultants, 15, 1, "price");  // Jenny
+    book(consultants, 11, 2, "price");  // Jenny
+    book(consultants, 10, 2, "price");  // John
+    book(consultants, 20, 2, "rate");   // John
+    book(consultants, 11, 1, "rate");   // Bob
+    book(consultants, 11, 2, "rate");   // No Service
+    book(consultants, 14, 3, "price");  // John
+
+    console.log('=== Task 3 ===');
+    function func(...data) {
+      const middleNameMap = {}; // 儲存每個中間字與對應的名字
+      const excludedNames = new Set(); // 儲存需要排除的名字
+
+      // 1. 提取中間名
+      data.forEach(name => {
+        if (name.length <= 2) {
+          // 名字只有兩個字，沒有中間名，直接排除
+          excludedNames.add(name);
+        } else {
+          // 去掉頭尾，只保留中間部分
+          const middleChars = name.slice(1, -1).split(""); // 拆分中間部分成單個字
+          middleChars.forEach(char => {
+            if (!middleNameMap[char]) {
+              middleNameMap[char] = [];
+            }
+            middleNameMap[char].push(name); // 將名字與中間字對應
+          });
+
+          // 如果中間部分有重複字，直接排除該名字
+          const uniqueChars = new Set(middleChars);
+          if (uniqueChars.size < middleChars.length) {
+            excludedNames.add(name);
+          }
+        }
+      });
+
+      // 2. 遍歷中間名，檢查是否需要排除
+      for (const [char, names] of Object.entries(middleNameMap)) {
+        if (names.length > 1) {
+          // 如果某個中間字對應多個名字，這些名字都需要排除
+          names.forEach(name => excludedNames.add(name));
+        }
+      }
+
+      // 3. 找到未被排除的名字
+      for (const name of data) {
+        if (!excludedNames.has(name)) {
+          console.log(name); // 輸出未被排除的名字
+          return;
+        }
+      }
+
+      console.log("沒有"); // 如果所有名字都被排除，輸出 "沒有"
+    }
+
+    func("彭大牆", "陳王明雅", "吳明");  // print 彭大牆
+    func("郭靜雅", "王立強", "郭林靜宜", "郭立恆", "林花花");  // print 林花花
+    func("郭宣雅", "林靜宜", "郭宣恆", "林靜花");  // print 沒有
+    func("郭宣雅", "夏曼藍波安", "郭宣恆");  // print 夏曼藍波安
+
+    console.log('=== Task 4 ===');
+    // 0,4,8,7,11,15,14,18,22,21,25,...
+    function getNumber(index) {
+      let sum = 0;
+      for (let i = 1; i <= index; i++) {
+        if ((i - 1) % 3 === 0 || (i - 1) % 3 === 1) {
+          sum += 4; // 每組前兩步都是 +4
+        } else {
+          sum -= 1; // 每組第三步是 -1
+        }
+      }
+      console.log(sum);
+    }
+
+    getNumber(1);  // print 4
+    getNumber(5);  // print 15
+    getNumber(10);  // print 25
+    getNumber(30);  // print 70
+
+    console.log('=== Task 5 ===');
+    function find(spaces, stat, n) {
+      let bestCarIndex = -1; // 預設為 -1，表示沒有符合條件的車廂
+      let minSpace = Infinity; // 用於記錄符合條件的最小車廂空間
+
+      for (let i = 0; i < spaces.length; i++) {
+        if (stat[i] === 1 && spaces[i] >= n) { //車廂可用 目前座位可以坐
+          if (spaces[i] < minSpace) {
+            bestCarIndex = i;
+            minSpace = spaces[i];
+          }
+        }
+      }
+
+      console.log(bestCarIndex);
+    }
+
+    // 測試範例
+    find([3, 1, 5, 4, 3, 2], [0, 1, 0, 1, 1, 1], 2); // print 5
+    find([1, 0, 5, 1, 3], [0, 1, 0, 1, 1], 4); // print -1
+    find([4, 6, 5, 8], [0, 1, 1, 1], 4); // print 2
+
+  </script>
+</body>
+
+</html>
