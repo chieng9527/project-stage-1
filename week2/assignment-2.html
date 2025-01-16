@@ -169,37 +169,31 @@
     book(consultants, 14, 3, "price");  // John
 
     console.log('=== Task 3 ===');
-    function func(...data) {
-      const middleNameMap = {}; // 儲存每個中間字與對應的名字
+       function func(...data) {
+      const middleCharMap = {}; // 儲存中間名與對應名字的關係
       const excludedNames = new Set(); // 儲存需要排除的名字
 
       // 1. 提取中間名
       data.forEach(name => {
-        if (name.length <= 2) {
-          // 名字只有兩個字，沒有中間名，直接排除
-          excludedNames.add(name);
-        } else {
-          // 去掉頭尾，只保留中間部分
-          const middleChars = name.slice(1, -1).split(""); // 拆分中間部分成單個字
-          middleChars.forEach(char => {
-            if (!middleNameMap[char]) {
-              middleNameMap[char] = [];
-            }
-            middleNameMap[char].push(name); // 將名字與中間字對應
-          });
+        let middleChar = null; // 中間名
+        if (name.length === 2 || name.length === 3) { //兩個字或三個字
+          middleChar = name[1];//取二
+        } else if (name.length === 4) { //四個字
+          middleChar = name[2];//取三
+        }
 
-          // 如果中間部分有重複字，直接排除該名字
-          const uniqueChars = new Set(middleChars);
-          if (uniqueChars.size < middleChars.length) {
-            excludedNames.add(name);
+        if (middleChar) {
+          if (!middleCharMap[middleChar]) {
+            middleCharMap[middleChar] = [];
           }
+          middleCharMap[middleChar].push(name); // 將名字與中間名對應
         }
       });
 
-      // 2. 遍歷中間名，檢查是否需要排除
-      for (const [char, names] of Object.entries(middleNameMap)) {
+      // 2. 遍歷中間名，檢查重複字，將包含重複中間名的名字排除
+      for (const [char, names] of Object.entries(middleCharMap)) {
         if (names.length > 1) {
-          // 如果某個中間字對應多個名字，這些名字都需要排除
+          // 如果中間名對應多個名字，排除所有名字
           names.forEach(name => excludedNames.add(name));
         }
       }
