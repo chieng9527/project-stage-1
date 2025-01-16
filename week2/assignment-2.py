@@ -141,7 +141,7 @@ def func(*data):
     # 1. 提取中間名
     for name in data:
         middle_char = None
-        if len(name) == 4:  # 四個字，取第三個字
+        if len(name) == 4 or len(name) == 5:  # 四個字或五個字，取第三個字
             middle_char = name[2]
         elif len(name) == 2 or len(name) == 3:  # 兩個字或三個字，取第二個字
             middle_char = name[1]
