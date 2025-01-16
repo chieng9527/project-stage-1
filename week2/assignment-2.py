@@ -138,36 +138,32 @@ def func(*data):
     middle_name_map = {}  # 儲存每個中間字與對應的名字
     excluded_names = set()  # 儲存需要排除的名字
 
-    #  1. 提取中間名
+     # 1. 提取中間名
     for name in data:
-        if len(name) <= 2:
-            # 名字只有兩個字，沒有中間名，直接排除
-            excluded_names.add(name)
-        else:
-            # 去掉頭尾，只保留中間部分
-            middle_chars = name[1:-1]  # 中間部分
-            for char in middle_chars:
-                if char not in middle_name_map:
-                    middle_name_map[char] = []
-                middle_name_map[char].append(name)  # 將名字與中間字對應
+        middle_char = None
+        if len(name) == 4:  # 四個字，取第三個字
+            middle_char = name[2]
+        elif len(name) == 2 or len(name) == 3:  # 兩個字或三個字，取第二個字
+            middle_char = name[1]
 
-            # 如果中間部分有重複字，直接排除該名字
-            if len(set(middle_chars)) < len(middle_chars):
-                excluded_names.add(name)
+        if middle_char:
+            if middle_char not in middle_char_map:
+                middle_char_map[middle_char] = []
+            middle_char_map[middle_char].append(name)  # 將名字與中間名對應
 
-    #  2. 遍歷中間名，檢查是否需要排除
-    for char, names in middle_name_map.items():
+    # 2. 檢查重複字，排除對應的名字
+    for char, names in middle_char_map.items():
         if len(names) > 1:
-            # 如果某個中間字對應多個名字，這些名字都需要排除
-            excluded_names.update(names)
+            excluded_names.update(names)  # 排除所有對應的名字
 
-    #  3. 找到未被排除的名字
+    # 3. 找到未被排除的名字
     for name in data:
         if name not in excluded_names:
             print(name)  # 輸出未被排除的名字
             return
 
     print("沒有")  # 如果所有名字都被排除，輸出 "沒有"
+
 
 func("彭大牆", "陳王明雅", "吳明")  # print 彭大牆
 func("郭靜雅", "王立強", "郭林靜宜", "郭立恆", "林花花")  # print 林花花
