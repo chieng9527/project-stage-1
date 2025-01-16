@@ -138,7 +138,7 @@ def func(*data):
     middle_name_map = {}  # 儲存每個中間字與對應的名字
     excluded_names = set()  # 儲存需要排除的名字
 
-     # 1. 提取中間名
+    # 1. 提取中間名
     for name in data:
         middle_char = None
         if len(name) == 4:  # 四個字，取第三個字
@@ -147,12 +147,12 @@ def func(*data):
             middle_char = name[1]
 
         if middle_char:
-            if middle_char not in middle_char_map:
-                middle_char_map[middle_char] = []
-            middle_char_map[middle_char].append(name)  # 將名字與中間名對應
+            if middle_char not in middle_name_map:
+                middle_name_map[middle_char] = []
+            middle_name_map[middle_char].append(name)  # 將名字與中間名對應
 
     # 2. 檢查重複字，排除對應的名字
-    for char, names in middle_char_map.items():
+    for char, names in middle_name_map.items():
         if len(names) > 1:
             excluded_names.update(names)  # 排除所有對應的名字
 
