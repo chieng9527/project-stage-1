@@ -16,14 +16,12 @@
     <a href="/signout"><b>登出系統</b></a>
   </div>
   <hr />
-  <!-- 修改留言表單的 action -->
   <form action="/createMessage" method="post">
     <h2>快來留言吧</h2>
     <label>內容<input type="text" name="content" placeholder="輸入留言內容" required></label>
     <button type="submit">送出</button>
   </form>
   <hr />
-  <!-- 調整留言顯示邏輯 -->
   <div class="message">
     {% for message in messages %}
     <div class="message-item">
@@ -42,7 +40,7 @@
     function confirmDelete() {
       const result = confirm("確定要刪除這則留言嗎？");
       if (!result) {
-        event.preventDefault(); // 阻止表單提交
+        event.preventDefault(); 
       }
       return result;
     }
