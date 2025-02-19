@@ -26,7 +26,7 @@ db_pool = pooling.MySQLConnectionPool(
     pool_size=5,
     host=os.getenv("DB_HOST", "localhost"),
     user=os.getenv("DB_USER", "root"),
-    password=os.getenv("DB_PASSWORD", "asdf0147"),
+    password=os.getenv("DB_PASSWORD", "12345678"),
     database=os.getenv("DB_NAME", "website"),
 )
 
