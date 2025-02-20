@@ -158,16 +158,18 @@ async def create_message(request: Request, content: str = Form(...)):
 @app.post("/deleteMessage/{message_id}")
 async def delete_message(request: Request, message_id: int = Path(..., gt=0)):
     session_user = get_session_user(request)
+
     if not session_user["SIGNED_IN"]:
         return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
 
     with get_db_connection() as conn:
         cursor = conn.cursor(dictionary=True)
+
         cursor.execute("SELECT member_id FROM message WHERE id = %s", (message_id,))
         message = cursor.fetchone()
 
-        if not message:
-            return RedirectResponse("/member", status_code=status.HTTP_302_FOUND)
+        if not message or message["member_id"] != session_user["USER_ID"]:
+            return RedirectResponse("/error?message=無權刪除此留言", status_code=status.HTTP_302_FOUND)
 
         cursor.execute("DELETE FROM message WHERE id = %s", (message_id,))
         conn.commit()
