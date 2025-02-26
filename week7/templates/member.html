@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>會員頁</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+
+<body>
+  <header>
+    <h1>歡迎光臨，這是會員頁</h1>
+  </header>
+  <div class="content">
+    <h2 id="welcomeMessage">{{ name }}，歡迎登入系統</h2>
+    <a href="/signout"><b>登出系統</b></a>
+  </div>
+  <hr />
+  <form id="messageForm" action="/createMessage" method="post">
+    <h2>快來留言吧</h2>
+    <label>內容<input type="text" name="content" placeholder="輸入留言內容" required></label>
+    <button type="submit">送出</button>
+  </form>
+  <hr />
+  <div class="message">
+    {% for message in messages %}
+    <div class="message-item" data-member-id="{{ message.member_id }}">
+      <div class="message-content">
+        <strong>{{ message.name }}：</strong>{{ message.content }}
+      </div>
+      {% if message.member_id == USER_ID %}
+      <form class="delete-form" action="/deleteMessage/{{ message.id }}" method="post">
+        <button type="submit" class="delete-btn">X</button>
+      </form>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  <hr />
+  <form id="searchForm">
+    <h2>查詢會員姓名</h2>
+    <div>
+      <input type="text" id="searchUsername" placeholder="輸入會員帳號">
+      <button type="submit">查詢</button>
+    </div>
+    <div id="searchResult" class="result-box"></div>
+  </form>
+  <hr />
+  <form id="updateForm">
+    <h2>更新我的姓名</h2>
+    <div>
+      <input type="text" id="newName" placeholder="輸入新姓名">
+      <button type="submit">更新</button>
+    </div>
+    <div id="updateResult" class="result-box"></div>
+  </form>
+  <hr />
+  <script>
+    document.getElementById('searchForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+      const username = document.getElementById('searchUsername').value;
+      const resultDiv = document.getElementById('searchResult');
+
+      try {
+        const response = await fetch(`/api/member?username=${encodeURIComponent(username)}`);
+        const { data } = await response.json();
+        resultDiv.textContent = data ? `${data.name} (${data.username})` : '查無此會員';
+        resultDiv.style.color = data ? 'green' : 'red';
+      } catch (error) {
+        resultDiv.textContent = '查詢失敗';
+        resultDiv.style.color = 'red';
+      }
+    });
+
+    document.getElementById('updateForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+      const newName = document.getElementById('newName').value.trim();
+      const resultDiv = document.getElementById('updateResult');
+
+      if (!newName) {
+        resultDiv.textContent = '請輸入新姓名';
+        resultDiv.style.color = 'red';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/member', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: newName })
+        });
+        const result = await response.json();
+        if (result.ok) {
+          document.getElementById('welcomeMessage').textContent = `${newName}，歡迎登入系統`;
+          resultDiv.textContent = '更新成功';
+          resultDiv.style.color = 'green';
+        } else {
+          resultDiv.textContent = '更新失敗';
+          resultDiv.style.color = 'red';
+        }
+      } catch (error) {
+        resultDiv.textContent = '伺服器連線失敗';
+        resultDiv.style.color = 'red';
+      }
+    });
+  </script>
+</body>
+
+</html>
